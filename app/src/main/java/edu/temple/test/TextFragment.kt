@@ -6,10 +6,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.lifecycle.ViewModelProvider
 
 class TextFragment : Fragment() {
 
     private lateinit var textView: TextView
+
+    private lateinit var sizeViewModel : SizeViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Fetch ViewModel instance
+        // Any component that scopes against the Activity will receive
+        // the same instance of SizeViewModel
+        sizeViewModel = ViewModelProvider(requireActivity())[SizeViewModel::class.java]
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -18,6 +30,15 @@ class TextFragment : Fragment() {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_text, container, false).apply {
             textView = findViewById(R.id.textView)
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Observe LiveData in ViewModel and update UI when state change occurs
+        sizeViewModel.getSize().observe(requireActivity()) {
+            changeTextSize(it)
         }
     }
 
